@@ -10,6 +10,7 @@ django = "*"
 djangorestframework = "*"
 pyyaml = "*"
 djangorestframework-yaml = "*"
+uritemplate = "*"
 
 [requires]
 python_version = "3.7"
