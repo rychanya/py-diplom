@@ -1,10 +1,16 @@
-from rest_framework import generics, permissions, status, viewsets
+from django.contrib.auth.tokens import default_token_generator
+from django.template.context_processors import request
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from rest_framework import generics, permissions, serializers, status, viewsets
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_yaml.parsers import YAMLParser
 
+from .mailing import send_reset_mail
 from .models import Cart, CartItem, Order, OrderItem, Product, Shop, User
+from .serializers.auth import ConfirmResetPasswordSerializer, ResetPaswordSerializer
 from .serializers.ordering import CartItemSerializer, CartSerializer, OrderSerializer
 from .serializers.product import ProductSerializer
 from .serializers.update import (
@@ -28,9 +34,6 @@ class IsShopOwner(permissions.BasePermission):
 
 
 class FileUploadView(APIView):
-    # authentication_classes = [
-    #     TokenAuthentication,
-    # ]
     permission_classes = [permissions.IsAuthenticated, IsShopOwner]
     parser_classes = [
         YAMLParser,
@@ -129,3 +132,34 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Order.objects.filter(user=user)
+
+
+class ResetPasswordView(APIView):
+    def get(self, request, format=None):
+        serializer = ResetPaswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        print(serializer.data)
+        try:
+            user = User.objects.get(email=serializer.data["email"])
+            send_reset_mail(user)
+        except User.DoesNotExist:
+            pass
+        return Response("ok")
+
+
+class ConfirmResetPasword(APIView):
+    def get(self, request, uidb64, token, format=None):
+        serializer = ConfirmResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.set_password(serializer.data["password1"])
+            user.save()
+        else:
+            return Response("false")
+        return Response("ok")
