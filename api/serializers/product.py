@@ -1,14 +1,7 @@
 from rest_framework import serializers
 
-from api.models import (
-    BaseProduct,
-    Category,
-    Parameter,
-    Product,
-    ProductParameter,
-    Shop,
-    User,
-)
+from api.models import (BaseProduct, Category, Parameter, Product,
+                        ProductParameter, Shop)
 
 
 class ShopSerializer(serializers.ModelSerializer):
