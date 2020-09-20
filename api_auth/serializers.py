@@ -3,6 +3,9 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
+    last_name = serializers.CharField()
+    first_name = serializers.CharField()
+
     class Meta:
         model = get_user_model()
         fields = [
@@ -44,3 +47,8 @@ class ConfirmResetPasswordSerializer(serializers.Serializer):
         if data["password1"] != data["password2"]:
             return serializers.ValidationError("password incorect")
         return data
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()

@@ -1,14 +1,20 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.template.context_processors import request
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
-from rest_framework import generics, status
+from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import (ConfirmResetPasswordSerializer,
-                          ResetPaswordSerializer, UserSerializer)
+from .mailing import send_reset_mail
+from .serializers import (
+    ConfirmResetPasswordSerializer,
+    LoginSerializer,
+    ResetPaswordSerializer,
+    UserSerializer,
+)
 
 
 class RegisterUserView(generics.CreateAPIView):
@@ -27,11 +33,11 @@ class ResetPasswordView(APIView):
     def get(self, request, format=None):
         serializer = ResetPaswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print(serializer.data)
         User = get_user_model()
         try:
             user = User.objects.get(email=serializer.data["email"])
-            send_reset_mail(user)
+            current_site = get_current_site(request)
+            send_reset_mail(user, current_site)
         except User.DoesNotExist:
             pass
         return Response("ok")
@@ -54,3 +60,22 @@ class ConfirmResetPasword(APIView):
         else:
             return Response("false")
         return Response("ok")
+
+
+class LoginView(APIView):
+    def get(self, request, format=None):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(
+            email=serializer.data["email"], password=serializer.data["password"]
+        )
+        if user is not None:
+            login(request, user)
+            return Response("login")
+        return Response("error")
+
+
+class LogoutView(APIView):
+    def get(self, request, format=None):
+        logout(request)
+        return Response("logout")

@@ -1,10 +1,14 @@
-from os import name
-
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from .views import (CartAddView, CartView, FileUploadView,
-                    OrderViewSet, ProductListView, PurchaseView)
+from .views import (
+    CartAddView,
+    CartView,
+    FileUploadView,
+    OrderViewSet,
+    ProductListView,
+    PurchaseView,
+)
 
 urlpatterns = [
     path("upload", FileUploadView.as_view()),

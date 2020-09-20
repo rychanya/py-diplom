@@ -5,8 +5,7 @@ from rest_framework.views import APIView
 from rest_framework_yaml.parsers import YAMLParser
 
 from .models import Cart, CartItem, Order, OrderItem, Product, Shop
-from .serializers.ordering import (CartItemSerializer, CartSerializer,
-                                   OrderSerializer)
+from .serializers.ordering import CartItemSerializer, CartSerializer, OrderSerializer
 from .serializers.product import ProductSerializer
 from .serializers.update import CategoriesSerializer, ProductFileSerializer
 
