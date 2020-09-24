@@ -7,12 +7,13 @@ from django.template.context_processors import request
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from six import text_type
+
+# from six import text_type
 
 
 class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
-        return text_type(user.pk) + text_type(timestamp) + text_type(user.is_active)
+        return str(user.pk) + str(timestamp) + str(user.is_active)
 
 
 email_confirm_token_generator = EmailConfirmTokenGenerator()

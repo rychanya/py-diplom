@@ -1,5 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
+
 from rest_framework import serializers
+
+from .mailing import send_confirm_mail
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,9 +33,12 @@ class UserSerializer(serializers.ModelSerializer):
             middle_name=validated_data["middle_name"],
             company=validated_data["company"],
             position=validated_data["position"],
+            is_active=False,
         )
         user.set_password(validated_data["password"])
         user.save()
+        current_site = get_current_site(self.context["request"])
+        send_confirm_mail(user, current_site)
         return user
 
 

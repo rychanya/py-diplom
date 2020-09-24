@@ -4,11 +4,12 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.context_processors import request
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
+
 from rest_framework import generics, serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .mailing import send_reset_mail
+from .mailing import email_confirm_token_generator, send_confirm_mail, send_reset_mail
 from .serializers import (
     ConfirmResetPasswordSerializer,
     LoginSerializer,
@@ -60,6 +61,24 @@ class ConfirmResetPasword(APIView):
         else:
             return Response("false")
         return Response("ok")
+
+
+class ConfirmEmail(APIView):
+    def get(self, request, uidb64, token, format=None):
+        User = get_user_model()
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and email_confirm_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+        else:
+            print(email_confirm_token_generator.check_token(user, token))
+            return Response("false")
+        return Response("active")
 
 
 class LoginView(APIView):
