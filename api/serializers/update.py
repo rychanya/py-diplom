@@ -1,14 +1,6 @@
 from rest_framework import serializers
 
-from api.models import (
-    BaseProduct,
-    Category,
-    Parameter,
-    Product,
-    ProductParameter,
-    Shop,
-    User,
-)
+from api.models import BaseProduct, Category, Parameter, Product, ProductParameter, Shop
 
 
 class CategoriesSerializer(serializers.Serializer):
@@ -80,33 +72,3 @@ class ProductFileSerializer(serializers.ModelSerializer):
                 product=product, parameter=param, defaults={"value": parameter["value"]}
             )
         return product
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            "last_name",
-            "first_name",
-            "middle_name",
-            "email",
-            "password",
-            "company",
-            "position",
-        ]
-
-    extra_kwargs = {"password": {"write_only": True}}
-
-    def create(self, validated_data):
-        user = User(
-            email=validated_data["email"],
-            username=validated_data["email"],
-            last_name=validated_data["last_name"],
-            first_name=validated_data["first_name"],
-            middle_name=validated_data["middle_name"],
-            company=validated_data["company"],
-            position=validated_data["position"],
-        )
-        user.set_password(validated_data["password"])
-        user.save()
-        return user

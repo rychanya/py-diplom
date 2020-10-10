@@ -11,6 +11,7 @@ djangorestframework = "*"
 pyyaml = "*"
 djangorestframework-yaml = "*"
 uritemplate = "*"
+six = "*"
 
 [requires]
 python_version = "3.7"
