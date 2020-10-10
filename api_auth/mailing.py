@@ -13,20 +13,22 @@ from django.utils.http import urlsafe_base64_encode
 
 class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
-        return str(user.pk) + str(timestamp) + str(user.is_active)
+        is_active = "confirm" if user.is_active else ""
+        return str(user.pk) + user.password + str(is_active) + str(timestamp)
 
 
 email_confirm_token_generator = EmailConfirmTokenGenerator()
 
 
 def get_email(email_template_name, current_site, user, token_generator):
+    token = token_generator.make_token(user)
     pipeline = {
         "email": user.email,
         "domain": current_site.domain,
         "site_name": "Website",
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-        "user": user,
-        "token": token_generator.make_token(user),
+        # "user": user,
+        "token": token,
         "protocol": "http",
     }
     email = render_to_string(email_template_name, pipeline)

@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
-
 from rest_framework import serializers
 
 from .mailing import send_confirm_mail
