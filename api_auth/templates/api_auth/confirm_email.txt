@@ -1,5 +1,1 @@
-{% autoescape off %}
-
-{{ protocol }}://{{ domain }}{% url 'confirm_email' uidb64=uid token=token %}
-
-{% endautoescape %}
+{% autoescape off %}{{ protocol }}://{{ domain }}{% url 'confirm_email' uidb64=uid token=token %}{% endautoescape %}
