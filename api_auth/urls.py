@@ -13,7 +13,7 @@ urlpatterns = [
     path("login", LoginView.as_view(), name="api-login"),
     path("logout", LogoutView.as_view(), name="api-logout"),
     path("registration", RegisterUserView.as_view(), name="api-registration"),
-    path("reset_password", ResetPasswordView.as_view()),
+    path("reset_password", ResetPasswordView.as_view(), name="password_reset"),
     path(
         "reset_password/<str:uidb64>/<str:token>",
         ConfirmResetPasword.as_view(),

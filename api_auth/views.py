@@ -29,7 +29,7 @@ class RegisterUserView(generics.CreateAPIView):
 
 
 class ResetPasswordView(APIView):
-    def get(self, request, format=None):
+    def post(self, request, format=None):
         serializer = ResetPaswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         User = get_user_model()
@@ -43,7 +43,7 @@ class ResetPasswordView(APIView):
 
 
 class ConfirmResetPasword(APIView):
-    def get(self, request, uidb64, token, format=None):
+    def post(self, request, uidb64, token, format=None):
         serializer = ConfirmResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         User = get_user_model()
@@ -52,13 +52,13 @@ class ConfirmResetPasword(APIView):
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
-
         if user is not None and default_token_generator.check_token(user, token):
             user.set_password(serializer.data["password1"])
             user.save()
-        else:
-            return Response("false")
-        return Response("ok")
+            return Response(data={"password_change": True}, status=status.HTTP_200_OK)
+        return Response(
+            data={"password_change": False}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class ConfirmEmail(APIView):

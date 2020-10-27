@@ -35,9 +35,7 @@ def get_email(email_template_name, current_site, user, token_generator):
 def send_reset_mail(user, current_site):
     subject = "Password Reset Requested"
     email_template_name = "api_auth/password_reset_email.txt"
-    email = get_email(
-        email_template_name, current_site, user, email_confirm_token_generator
-    )
+    email = get_email(email_template_name, current_site, user, default_token_generator)
     try:
         send_mail(
             subject, email, "admin@example.com", [user.email], fail_silently=False
@@ -49,7 +47,9 @@ def send_reset_mail(user, current_site):
 def send_confirm_mail(user, current_site):
     subject = "Email Confirm"
     email_template_name = "api_auth/confirm_email.txt"
-    email = get_email(email_template_name, current_site, user, default_token_generator)
+    email = get_email(
+        email_template_name, current_site, user, email_confirm_token_generator
+    )
     try:
         send_mail(
             subject, email, "admin@example.com", [user.email], fail_silently=False
