@@ -8,8 +8,6 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
-# from six import text_type
-
 
 class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
@@ -27,7 +25,6 @@ def get_email(email_template_name, current_site, user, token_generator):
         "domain": current_site.domain,
         "site_name": "Website",
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-        # "user": user,
         "token": token,
         "protocol": "http",
     }

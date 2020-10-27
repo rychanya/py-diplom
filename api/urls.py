@@ -12,17 +12,10 @@ from .views import (
 
 urlpatterns = [
     path("upload", FileUploadView.as_view()),
-    # path("register", RegisterUserView.as_view()),
     path("list", ProductListView.as_view()),
     path("cart/add", CartAddView.as_view()),
     path("cart", CartView.as_view()),
     path("purchase", PurchaseView.as_view()),
-    # path("reset", ResetPasswordView.as_view()),
-    # path(
-    #     "confirm/<str:uidb64>/<str:token>",
-    #     ConfirmResetPasword.as_view(),
-    #     name="password_reset_confirm",
-    # ),
 ]
 
 router = DefaultRouter()

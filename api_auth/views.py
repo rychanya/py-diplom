@@ -1,14 +1,13 @@
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-from django.template.context_processors import request
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
-from rest_framework import generics, serializers, status
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .mailing import email_confirm_token_generator, send_confirm_mail, send_reset_mail
+from .mailing import email_confirm_token_generator, send_reset_mail
 from .serializers import (
     ConfirmResetPasswordSerializer,
     LoginSerializer,
@@ -74,14 +73,12 @@ class ConfirmEmail(APIView):
         if user is not None and email_confirm_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-        else:
-            print(email_confirm_token_generator.check_token(user, token))
-            return Response("false")
-        return Response("active")
+            return Response(data={"confirm": True}, status=status.HTTP_200_OK)
+        return Response(data={"confirm": False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
-    def get(self, request, format=None):
+    def post(self, request, format=None):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = authenticate(
@@ -89,11 +86,13 @@ class LoginView(APIView):
         )
         if user is not None:
             login(request, user)
-            return Response("login")
-        return Response("error")
+            return Response(
+                data={"login": user.is_authenticated}, status=status.HTTP_200_OK
+            )
+        return Response(data={"login": False}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutView(APIView):
     def get(self, request, format=None):
         logout(request)
-        return Response("logout")
+        return Response(data={"login": False}, status=status.HTTP_200_OK)

@@ -10,9 +10,9 @@ from .views import (
 )
 
 urlpatterns = [
-    path("login", LoginView.as_view()),
-    path("logout", LogoutView.as_view()),
-    path("siginup", RegisterUserView.as_view()),
+    path("login", LoginView.as_view(), name="api-login"),
+    path("logout", LogoutView.as_view(), name="api-logout"),
+    path("registration", RegisterUserView.as_view(), name="api-registration"),
     path("reset_password", ResetPasswordView.as_view()),
     path(
         "reset_password/<str:uidb64>/<str:token>",
