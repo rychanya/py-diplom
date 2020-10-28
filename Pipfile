@@ -13,6 +13,7 @@ pyyaml = "*"
 djangorestframework-yaml = "*"
 uritemplate = "*"
 six = "*"
+celery = {extras = ["redis"],version = "*"}
 
 [requires]
 python_version = "3.7"
