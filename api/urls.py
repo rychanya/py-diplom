@@ -11,7 +11,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path("upload", FileUploadView.as_view()),
+    path("upload", FileUploadView.as_view(), name="api-shop-update"),
     path("list", ProductListView.as_view()),
     path("cart/add", CartAddView.as_view()),
     path("cart", CartView.as_view()),
