@@ -1,26 +1,41 @@
 from rest_framework import generics, permissions, serializers, status, viewsets
 from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_yaml.parsers import YAMLParser
 
 from .models import Cart, CartItem, Order, OrderItem, Product, Shop
 from .serializers.ordering import CartItemSerializer, CartSerializer, OrderSerializer
-from .serializers.product import ProductSerializer
+from .serializers.product import ProductSerializer, ShopSerializer
 from .serializers.update import CategoriesSerializer, ProductFileSerializer
+
+from .tasks import debug_task
 
 
 class IsShopOwner(permissions.BasePermission):
     def has_permission(self, request, view):
-        try:
-            name = request.data["shop"]
-        except KeyError:
+        name = request.data.get("shop") or request.data.get("name")
+        if name is None:
             return False
         try:
             shop = Shop.objects.get(name=name)
             return shop.owner == request.user
         except Shop.DoesNotExist:
             return True
+
+
+class ShopSettingsView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsShopOwner]
+
+    def post(self, request, format=None):
+        shop, _ = Shop.objects.get_or_create(
+            name=request.data["name"], defaults={"owner": request.user}
+        )
+        serializer = ShopSerializer(shop, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response("ok")
 
 
 class FileUploadView(APIView):

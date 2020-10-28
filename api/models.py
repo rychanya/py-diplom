@@ -5,7 +5,8 @@ from django.db import models
 class Shop(models.Model):
     name = models.CharField(max_length=100, unique=True)
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    delivery_price = models.DecimalField(max_digits=19, decimal_places=2)
+    delivery_price = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    status = models.BooleanField(default=True)
 
 
 class Category(models.Model):

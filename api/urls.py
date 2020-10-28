@@ -8,10 +8,13 @@ from .views import (
     OrderViewSet,
     ProductListView,
     PurchaseView,
+    ShopSettingsView,
+    DV,
 )
 
 urlpatterns = [
     path("upload", FileUploadView.as_view(), name="api-shop-update"),
+    path("shop", ShopSettingsView.as_view(), name="shop-settings"),
     path("list", ProductListView.as_view()),
     path("cart/add", CartAddView.as_view()),
     path("cart", CartView.as_view()),

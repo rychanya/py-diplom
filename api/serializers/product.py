@@ -4,9 +4,15 @@ from api.models import BaseProduct, Category, Parameter, Product, ProductParamet
 
 
 class ShopSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False)
+    delivery_price = serializers.DecimalField(
+        max_digits=19, decimal_places=2, required=False
+    )
+
     class Meta:
         model = Shop
-        fields = "__all__"
+        fields = ["name", "delivery_price", "status"]
+        read_only_fields = ["owner", "id"]
 
 
 class ProductParameterSerializer(serializers.ModelSerializer):
