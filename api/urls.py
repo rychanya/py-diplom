@@ -9,7 +9,6 @@ from .views import (
     ProductListView,
     PurchaseView,
     ShopSettingsView,
-    DV,
 )
 
 urlpatterns = [

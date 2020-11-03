@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
+    "django_celery_results",
     "api",
     "api_auth",
 ]
@@ -126,3 +127,7 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+# Celery
+CELERY_RESULT_BACKEND = 'django-db'

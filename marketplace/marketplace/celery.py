@@ -13,5 +13,11 @@ app = Celery("marketplace")
 #   should have a `CELERY_` prefix.
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
+# @app.task(name='celery.ping')
+# def ping():
+#     # type: () -> str
+#     """Simple task that just returns 'pong'."""
+#     return 'pong'
+
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
