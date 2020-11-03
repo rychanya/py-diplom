@@ -4,16 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-requests = "*"
 
 [packages]
 django = "*"
 djangorestframework = "*"
-pyyaml = "*"
 djangorestframework-yaml = "*"
-uritemplate = "*"
-six = "*"
-celery = {extras = ["redis"],version = "*"}
+django-celery-results = "*"
 
 [requires]
 python_version = "3.7"
