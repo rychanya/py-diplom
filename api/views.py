@@ -10,7 +10,7 @@ from .serializers.ordering import CartItemSerializer, CartSerializer, OrderSeria
 from .serializers.product import ProductSerializer, ShopSerializer
 from .serializers.update import CategoriesSerializer, ProductFileSerializer
 
-from .tasks import debug_task
+from .tasks import update_from_file
 
 
 class IsShopOwner(permissions.BasePermission):
@@ -45,25 +45,8 @@ class FileUploadView(APIView):
     ]
 
     def post(self, request, format=None):
-        shop, _ = Shop.objects.get_or_create(
-            name=request.data["shop"], defaults={"owner": request.user}
-        )
-        category_serialyzer = CategoriesSerializer(
-            data=request.data.get("categories"), many=True
-        )
-        category_serialyzer.is_valid(raise_exception=True)
-        category_serialyzer.save()
-        for good in request.data.get("goods"):
-            good["parameters"] = [
-                {"name": name, "value": value}
-                for name, value in good["parameters"].items()
-            ]
-        product_serilizer = ProductFileSerializer(
-            data=request.data.get("goods"), many=True
-        )
-        product_serilizer.is_valid(raise_exception=True)
-        product_serilizer.save(shop=shop)
-        return Response("ok")
+        res = update_from_file.delay(request.data)
+        return Response(res.task_id)
 
 
 class ProductListView(generics.ListAPIView):
